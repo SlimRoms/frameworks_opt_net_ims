@@ -1877,12 +1877,12 @@ public class ImsCall implements ICall {
 
                 // Since this call is the foreground call that sent the merge
                 // request, ending signifies that the call successfully got
-                // merged into the conference call.
-                // NOTE: We cannot identify a genuinely dropped call at this
-                // point.
-                processMergeComplete();
-
-                return;
+                // merged into the conference call only if mTransientConferenceSession exists.
+                // Else this is a genuine call end of this session & callTerminated will be invoked.
+                if (mTransientConferenceSession != null) {
+                    processMergeComplete();
+                    return;
+                }
             }
 
             // If this condition is satisfied, this call is either a part of
@@ -2224,7 +2224,10 @@ public class ImsCall implements ICall {
         @Override
         public void callSessionTerminated(ImsCallSession session, ImsReasonInfo reasonInfo) {
             if (mSession != session) {
-                log("callSessionTerminated :: not supported for conference session=" + session);
+                if (isTransientConferenceSession(session)) {
+                    processMergeFailed(reasonInfo);
+                    log("callSessionTerminated :: for transient session");
+                }
                 return;
             }
 
