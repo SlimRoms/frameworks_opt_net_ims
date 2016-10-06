@@ -857,10 +857,11 @@ public class ImsManager {
      * @throws ImsException
      */
     private boolean updateWfcFeatureAndProvisionedValues() throws ImsException {
+        boolean isNetworkRoaming = TelephonyManager.getDefault().isNetworkRoaming();
         boolean available = isWfcEnabledByPlatform(mContext);
         boolean enabled = isWfcEnabledByUser(mContext);
         displayWfcMode(mContext, true);
-        int mode = getWfcMode(mContext);
+        int mode = getWfcMode(mContext, isNetworkRoaming);
         boolean roaming = isWfcRoamingEnabledByUser(mContext);
         boolean isFeatureOn = available && enabled;
 
