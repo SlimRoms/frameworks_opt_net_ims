@@ -835,8 +835,11 @@ public class ImsManager {
         boolean enabled = isVtEnabledByUser(mContext);
         boolean isNonTty = isNonTtyOrTtyOnVolteEnabled(mContext);
         boolean isDataEnabled = isDataEnabled();
+        boolean ignoreDataEnabledChanged = getBooleanCarrierConfig(mContext,
+                CarrierConfigManager.KEY_IGNORE_DATA_ENABLED_CHANGED_FOR_VIDEO_CALLS);
 
-        boolean isFeatureOn = available && enabled && isNonTty && isDataEnabled;
+        boolean isFeatureOn = available && enabled && isNonTty
+                && (ignoreDataEnabledChanged || isDataEnabled);
 
         log("updateVideoCallFeatureValue: available = " + available
                 + ", enabled = " + enabled
@@ -1452,8 +1455,10 @@ public class ImsManager {
                         TelephonyManager.NETWORK_TYPE_LTE, turnOn ? 1 : 0, mImsConfigListener);
 
                 if (isVtEnabledByPlatform(mContext)) {
+                    boolean ignoreDataEnabledChanged = getBooleanCarrierConfig(mContext,
+                            CarrierConfigManager.KEY_IGNORE_DATA_ENABLED_CHANGED_FOR_VIDEO_CALLS);
                     boolean enableViLte = turnOn && isVtEnabledByUser(mContext) &&
-                            isDataEnabled();
+                            (ignoreDataEnabledChanged || isDataEnabled());
                     config.setFeatureValue(ImsConfig.FeatureConstants.FEATURE_TYPE_VIDEO_OVER_LTE,
                             TelephonyManager.NETWORK_TYPE_LTE,
                             enableViLte ? 1 : 0,
@@ -1795,6 +1800,8 @@ public class ImsManager {
         pw.println("  mConfigUpdated = " + mConfigUpdated);
         pw.println("  mImsService = " + mImsService);
         pw.println("  mDataEnabled = " + isDataEnabled());
+        pw.println("  ignoreDataEnabledChanged = " + getBooleanCarrierConfig(mContext,
+                CarrierConfigManager.KEY_IGNORE_DATA_ENABLED_CHANGED_FOR_VIDEO_CALLS));
 
         pw.println("  isGbaValid = " + isGbaValid(mContext));
         pw.println("  isImsTurnOffAllowed = " + isImsTurnOffAllowed());
