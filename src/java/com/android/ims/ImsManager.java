@@ -1526,7 +1526,7 @@ public class ImsManager {
     /**
      * Adapter class for {@link IImsRegistrationListener}.
      */
-    private class ImsRegistrationListenerProxy extends IImsRegistrationListener.Stub {
+    private static class ImsRegistrationListenerProxy extends IImsRegistrationListener.Stub {
         private int mServiceClass;
         private ImsConnectionStateListener mListener;
 
@@ -1572,6 +1572,7 @@ public class ImsManager {
 
             if (mListener != null) {
                 mListener.onImsConnected();
+                mListener.onImsConnected(imsRadioTech);
             }
         }
 
@@ -1657,6 +1658,16 @@ public class ImsManager {
 
             if (mListener != null) {
                 mListener.registrationAssociatedUriChanged(uris);
+            }
+        }
+
+        @Override
+        public void registrationChangeFailed(int targetAccessTech, ImsReasonInfo imsReasonInfo) {
+            if (DBG) log("registrationChangeFailed :: targetAccessTech=" + targetAccessTech +
+                    ", imsReasonInfo=" + imsReasonInfo);
+
+            if (mListener != null) {
+                mListener.onRegistrationChangeFailed(targetAccessTech, imsReasonInfo);
             }
         }
     }
